@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import GoogleStorageFileUploader from "./GoogleStorageFileUploader";
+import axios from "axios";
 
 function App() {
+  const [files, setFiles] = useState([]);
+  const URL = "http://localhost:5000";
+
+  useEffect(() => {
+    const test = async () => {
+      const resp = await axios.get(`${URL}/get-files-list`, {});
+      setFiles(resp?.data?.files);
+    };
+
+    test();
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <GoogleStorageFileUploader></GoogleStorageFileUploader>;
+      {files && files.length > 0 && (
+        <>
+          <h1>GCP Files List</h1>
+          <ul>
+            {files.map((file) => {
+              return <li key={file.id}>{file.name}</li>;
+            })}
+          </ul>
+        </>
+      )}
+    </>
   );
 }
 
